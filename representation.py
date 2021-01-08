@@ -29,7 +29,9 @@ def maximally_polarised_state(F):
 def compute_coefficient(alpha):
     return 2
 
+
 def projection_onto_spin_half(spinor):
+    spinor = spinor/spinor.norm() # normalise
     F = (spinor.shape[0]-1)/2
     poly_coeffs = np.zeros(spinor.shape[0], dtype=complex)
     for k in range(spinor.shape[0]):
@@ -102,7 +104,8 @@ def reconstruct_spinor(thetas, phis):
     spinor_coeffs = np.zeros(int(2*F + 1), dtype=complex)
     for k in range(int(2*F + 1)):
         spinor_coeffs[k] = poly_coeffs[k]/np.sqrt(comb(int(2*F), k)).conj()
-    return Qobj(spinor_coeffs)
+    unnormalised_spinor = Qobj(spinor_coeffs)
+    return unnormalised_spinor/unnormalised_spinor.norm()
 
 
 def polar_to_point(thetas, phis):
