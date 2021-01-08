@@ -55,5 +55,30 @@ def decompose_spinor(spinor, gauge=1):
     states = projections_into_states(thetas, phis, gauge)
     return states
 
+
+def draw_spinor_projection(spinor, gauge=1, d3=True, clear=True, return_states=False):
+    states = decompose_spinor(spinor, gauge)
+    if d3:
+        if clear:
+            b3.clear()
+        b3.add_states(states)
+        b3.show()
+    else:
+        if clear:
+            b.clear()
+        b.add_states(states)
+        b.show()
+    if return_states:
+        return states
+
+def refresh():
+    global N
+    N = Qobj(np.array([np.sin(eta) / np.sqrt(2), 0, np.cos(eta), 0, np.sin(eta) / np.sqrt(2)]))
+
+
+eta = np.pi/3
+F = Qobj(np.array([1, 0, 0, 0, 0]))
+N = Qobj(np.array([np.sin(eta)/np.sqrt(2), 0, np.cos(eta), 0, np.sin(eta)/np.sqrt(2)]))
+T = Qobj(np.array([np.sqrt(1/3), 0, 0, np.sqrt(2/3), 0]))
 b = Bloch()
 b3 = Bloch3d()
