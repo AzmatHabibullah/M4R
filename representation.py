@@ -46,7 +46,7 @@ def projections_into_states(thetas, phis, gauge=1):
                              np.e**(-1.0j * phis[i]/2)*np.sin(thetas[i]/2)])) for i in range(thetas.size)]
     if gauge==1:
         states = [Qobj(np.array([np.cos(thetas[i] / 2),
-                                 np.e ** (-1.0j * phis[i]) * np.sin(thetas[i] / 2)])) for i in range(thetas.size)]
+                                 np.e ** (1.0j * phis[i]) * np.sin(thetas[i] / 2)])) for i in range(thetas.size)]
     return states
 
 
@@ -56,20 +56,27 @@ def decompose_spinor(spinor, gauge=1):
     return states
 
 
-def draw_spinor_projection(spinor, gauge=1, d3=True, clear=True, return_states=False):
+def draw_spinor_projection(spinor, gauge=1, d3=True, clear=True, return_states=False, kind='vector'):
     states = decompose_spinor(spinor, gauge)
     if d3:
         if clear:
             b3.clear()
-        b3.add_states(states)
+        b3.add_states(states, kind)
         b3.show()
     else:
         if clear:
             b.clear()
-        b.add_states(states)
+        b.add_states(states, kind)
         b.show()
     if return_states:
         return states
+
+# todo implement a function which draws states as points
+# todo implement a function which draws lines (use point parameter method='l')
+# todo draw animation of moving spinors around a curve (eg phi = 0)
+# todo draw animation of moving spinors around arbitrary curve
+# todo calculate Berry phase
+# todo compute inversion formula
 
 def refresh():
     global N
