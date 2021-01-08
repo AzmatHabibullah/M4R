@@ -22,22 +22,15 @@ def zeta(theta, phi):
     return np.e**(1.0j * phi) * np.tan(theta/2)
 
 
-def maximally_polarised_state(F):
-    coefficients = np.zeros(2*F)
-
-
-def compute_coefficient(alpha):
-    return 2
-
-
 def projection_onto_spin_half(spinor):
-    spinor = spinor/spinor.norm() # normalise
+    spinor = spinor.unit() # normalise
     F = (spinor.shape[0]-1)/2
     poly_coeffs = np.zeros(spinor.shape[0], dtype=complex)
     for k in range(spinor.shape[0]):
         poly_coeffs[k] = np.sqrt(comb(int(2*F), k))*spinor.full()[k, 0].conj()
+    # highest coefficient first
     roots = np.roots(poly_coeffs)
-    thetas = np.abs(roots)
+    thetas = 2*np.arctan(np.abs(roots))
     phis = np.angle(roots)
     return poly_coeffs, thetas, phis
 
@@ -45,10 +38,11 @@ def projection_onto_spin_half(spinor):
 def projections_into_states(thetas, phis, gauge=1):
     if gauge==0:
         states = [Qobj(np.array([np.e**(1.0j * phis[i]/2)*np.cos(thetas[i]/2),
-                             np.e**(-1.0j * phis[i]/2)*np.sin(thetas[i]/2)])) for i in range(thetas.size)]
+                             np.e**(-1.0j * phis[i]/2)*np.sin(thetas[i]/2)]).round(10)) for i in range(thetas.size)]
     if gauge==1:
         states = [Qobj(np.array([np.cos(thetas[i] / 2),
-                                 np.e ** (1.0j * phis[i]) * np.sin(thetas[i] / 2)])) for i in range(thetas.size)]
+                                 np.e ** (1.0j * phis[i]) * np.sin(thetas[i] / 2)]).round(10)) for i in range(thetas.size)]
+
     return states
 
 
@@ -73,10 +67,11 @@ def draw_spinor_projection(spinor, gauge=1, d3=True, clear=True, return_states=F
     if return_states:
         return states
 
+# todo calculate Berry phase
+# todo fix branch cut issues for inversion
 # todo implement a function which draws lines (use point parameter method='l')
 # todo draw animation of moving spinors around a curve (eg phi = 0)
 # todo draw animation of moving spinors around arbitrary curve
-# todo calculate Berry phase
 
 
 def construct_polar_states(states, gauge=1):
@@ -87,7 +82,7 @@ def construct_polar_states(states, gauge=1):
     for k in range(n):
         if gauge ==1:
             thetas[k] = 2*np.arccos(states[k][0][0])
-            if thetas[k] != 0:
+            if thetas[k] != 0.0 and thetas[k] != np.pi:
                 phis[k] = np.log(states[k][1][0]/np.sin(thetas[k]/2))/1.0j # todo fix branch cut issues
             else:
                 phis[k] = 0
@@ -96,16 +91,21 @@ def construct_polar_states(states, gauge=1):
     return thetas, phis
 
 
-def reconstruct_spinor(thetas, phis):
+def build_spinor_from_polars(thetas, phis):
     n = thetas.size
     F = n/2
-    roots = [thetas[i] * np.e ** (1.0j * phis[i]) for i in range(n)]
-    poly_coeffs = np.polynomial.polynomial.polyfromroots(roots) # this is monic! see rescaling issues
+    roots = [np.tan(thetas[i]/2) * np.e ** (1.0j * phis[i]) for i in range(n)]
+    poly_coeffs = np.polynomial.polynomial.polyfromroots(roots)
     spinor_coeffs = np.zeros(int(2*F + 1), dtype=complex)
     for k in range(int(2*F + 1)):
         spinor_coeffs[k] = poly_coeffs[k]/np.sqrt(comb(int(2*F), k)).conj()
     unnormalised_spinor = Qobj(spinor_coeffs)
     return unnormalised_spinor/unnormalised_spinor.norm()
+
+
+def reconstruct_spinor(states, gauge=1):
+    thetas, phis = construct_polar_states(states, gauge)
+    return build_spinor_from_polars(thetas, phis)
 
 
 def polar_to_point(thetas, phis):
@@ -138,7 +138,7 @@ def refresh_N(eta):
     return Qobj(np.array([np.sin(eta) / np.sqrt(2), 0, np.cos(eta), 0, np.sin(eta) / np.sqrt(2)]))
 
 
-eta = np.pi/3
+eta = np.pi/4
 F = Qobj(np.array([1, 0, 0, 0, 0]))
 N = Qobj(np.array([np.sin(eta)/np.sqrt(2), 0, np.cos(eta), 0, np.sin(eta)/np.sqrt(2)]))
 T = Qobj(np.array([np.sqrt(1/3), 0, 0, np.sqrt(2/3), 0]))
