@@ -83,11 +83,15 @@ def construct_polar_states(states, gauge=1):
         if gauge ==1:
             thetas[k] = 2*np.arccos(states[k][0][0])
             if thetas[k] != 0.0 and thetas[k] != np.pi:
-                phis[k] = np.log(states[k][1][0]/np.sin(thetas[k]/2))/1.0j # todo fix branch cut issues
+                phis[k] = np.log(states[k][1][0]/np.sin(thetas[k]/2))/1.0j
             else:
                 phis[k] = 0
     thetas = thetas.real
     phis = phis.real
+    states0 = projections_into_states(thetas, phis, gauge)
+    for i in range(len(states0)):
+        if states[i] != states0[i]:
+            thetas[i] = -thetas[i]
     return thetas, phis
 
 
@@ -128,7 +132,7 @@ def draw_points(spinor, thetas=None, phis=None, d3=True, clear=True, method='s',
     else:
         if clear:
             b.clear()
-        b3.add_points([x, y, z], method)
+        b.add_points([x, y, z], method)
         b.show()
     if return_points:
         return x, y, z
@@ -137,6 +141,15 @@ def draw_points(spinor, thetas=None, phis=None, d3=True, clear=True, method='s',
 def refresh_N(eta):
     return Qobj(np.array([np.sin(eta) / np.sqrt(2), 0, np.cos(eta), 0, np.sin(eta) / np.sqrt(2)]))
 
+def normal(spinor):
+    return np.array([expect(sigmax(), spinor), expect(sigmay(), spinor), expect(sigmaz(), spinor)])
+    # this is just the points!
+
+def normals(spinor):
+    states = decompose_spinor(spinor)
+    return [normal(states[i]) for i in range(len(states))]
+
+#todo fix bloch3d plotting normals
 
 eta = np.pi/4
 F = Qobj(np.array([1, 0, 0, 0, 0]))
