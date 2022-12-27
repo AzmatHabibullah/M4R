@@ -1,6 +1,6 @@
 # M4R
 
-This repository contains the Python code used for my final year Masters project at Imperial, on the Majorana dynamics of spinor Bose-Einstein condensates.
+This repository contains the Python code and Mathematica files used for my final year Masters project at Imperial, on the Majorana dynamics of spinor Bose-Einstein condensates.
 
 Further details on the project, including the full report, can be found [here](https://azmathabibullah-com.vercel.app/projects/m4r).
 
