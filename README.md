@@ -6,7 +6,7 @@ Further details on the project, including the full report, can be found [here](h
 
 ## Disclaimer
 
-This code was written over a year ago and there are no guarantees that this is completely error-free. At some point, I will clean up this repository but feel free to submit PRs if you notice any errors.
+I cannot guarantee that this is completely error-free. I am aiming to tidy this repository up in early 2023 (building a library with nice documentation) but feel free to submit PRs if you notice any errors.
 
 ## Acknowledgements
 
