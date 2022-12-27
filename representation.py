@@ -33,6 +33,9 @@ def projection_onto_spin_half(spinor): # todo add handling for m = 0
     roots = np.roots(poly_coeffs)
     thetas = 2*np.arctan(np.abs(roots))
     phis = np.angle(roots)
+    for i, phi in enumerate(phis): # todo does this do anything useful?
+        if phi < 0:
+            phis[i] += 2*np.pi
     return poly_coeffs, thetas, phis
 
 #TODO add down states to drawing - check if number of roots < degree: then have 0
@@ -139,10 +142,10 @@ def polar_to_point(thetas, phis):
     return x, y, z
 
 
-def point_to_polar(v):
-    theta = np.arccos(v[2, :])
-    cos_phi = v[0, :]/np.sin(theta)
-    return theta, np.arccos(cos_phi)
+def point_to_polar(v): # todo fix hacky fix for 1d arrays and check nullity for division by 0 etcnp.
+    theta = np.arccos(v[2])
+    phi = np.arctan(v[1]/v[0])
+    return theta, phi
 
 
 def draw_points(spinor=None, thetas=None, phis=None, d3=True, clear=True, method='s', return_points=False, show=True):
